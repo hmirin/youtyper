@@ -46,7 +46,7 @@ Use ```--lesson_type``` to choose your lesson.
     - ```--num_lessons 10```: lessons to take (default: None, repeat until exit)
     - ```--len_lessons 50```: Number of maximum characters in a lesson (default: 100)
 
-2. Load python script to enable custome lesson
+2. Load python script to enable custom lesson
 
     ```youtyper --lesson_type python --generator_path path-to-your-lesson-text -- generator_name YourLessonGeneratorClassName```
     
@@ -73,9 +73,9 @@ Use ```--lesson_type``` to choose your lesson.
     - ```--analyzer wpm```: [To be implemented] Show words per minute
     - ``` --ignore_consecutive_errors```: [To be implemented] Ignore the consecutive error by the same character (deafult: false)
 
-2. Use custome analytics
+2. Use custome analyzer
 
-    ```youtyper ... --analyzer_path path-to-your-kpi-file --analyzer_name YourStatisticsClassName```
+    ```youtyper ... --analyzer_path path-to-your-analyzer-file --analyzer_name YourStatisticsClassName```
 
     Use the specified ```Analyzer``` class to analyze lesson logs.Example analyzer are available under ```examples```.  
     
@@ -90,19 +90,18 @@ Use ```--lesson_type``` to choose your lesson.
         - ```Lesson``` is basically text to type and metadata.
     - Unknown command line options are passed to the ```LessonGenarator``` class as list. 
 
-2. Custom Analytics
+2. Custom Analyzer
 
-- You must provide a custom ```Analyzer``` to create your custom analytics.
+- You must provide a custom ```Analyzer``` to use your custom analytics.
     - ```Analyzer``` must generate printable text to show user, and dict to save with lesson.
         - ```Analyzer``` must implement ```analyze``` method which returns ```(Dict, str)```
     - Unknown command line options are passed to the ```LessonGenarator``` class as list. 
-        - The prefix is stripped before the option passed to the custom class.
         - You can specify multiple ```Analyzer``` and all the unknown options are passed to all ```Analyzer```.
             - Check your option is not shared by other analyzers unintentionally.
          
 ## Lesson Log
 
-For further analytics, youtyper saves every lesson log to the ```.youtyper/logs``` under the user's home folder.
+For further analytics, youtyper saves every lesson log to the ```.youtyper``` directory under the user's homedir.
 
 A lesson log is a json file named as ```yyyymmdd_hhmmss_[lesson_name]_[lesson_id].json```. 
 
@@ -117,7 +116,7 @@ The structure is as follows:
   [
     {"timestamp": "2020/07/02 18:00:03", "key":  "k", "target":"l"},
     {"..."}
-  ]
+  ],
   "analytics": 
   {
     "cpm": {"overall": 100.0,"k": 70.6, "l": 116.4,"...": "..."},
