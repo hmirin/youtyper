@@ -11,6 +11,7 @@ class ExampleGenerator(LessonGenerator):
         # $ youtype --unknown-arg1 a b c --lesson_type python --unknown_arg2 --custom_lesson_generator...
         # custom_args =  ('--unknown-arg1', 'a', 'b', 'c', '--unknown_arg2')
         # You may want to use argparse to parse these arguments
+        super().__init__()
         parser = ArgumentParser()
         parser.add_argument("--text")
         parsed_args, unknown_args = parser.parse_known_args(custom_args)
