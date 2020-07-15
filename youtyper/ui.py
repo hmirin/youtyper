@@ -1,4 +1,5 @@
 import curses, time
+from typing import Optional
 
 from .lessons.lessons import Lesson
 from .logs import LessonLog
@@ -8,10 +9,11 @@ class UI(object):
     def __init__(self) -> None:
         pass
 
-    def start(self, lesson: Lesson) -> LessonLog:
+    def start(self, lesson: Lesson) -> Optional[LessonLog]:
         text = lesson.text
         lesson_log = LessonLog()
         current_str = ""
+        aborted = False
         try:
             win = curses.initscr()
             curses.noecho()
@@ -40,6 +42,8 @@ class UI(object):
                     pass
                 if current_str == text:
                     break
+        except:
+            aborted = True
         finally:
             curses.endwin()
-            return lesson_log
+            return  lesson_log if not aborted else None
