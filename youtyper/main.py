@@ -25,7 +25,7 @@ import click
     "--lesson_name",
     "-ln",
     default="default_lesson",
-    type=str,
+    type=click.Choice(default_lesson_generators.keys(), case_sensitive=True),
     help="Choose built-in lesson to use",
 )
 @click.option(
@@ -59,7 +59,7 @@ import click
     "--analyzer",
     "-a",
     default=["cpm", "error_rate"],
-    type=click.Choice(default_analyzers.keys(), case_sensitive=False),
+    type=click.Choice(default_analyzers.keys(), case_sensitive=True),
     multiple=True,
     help="Analytics to be shown at the end of the lesson",
 )
@@ -138,8 +138,6 @@ def main(
 
     p = UI()
     logs = []
-    first_lesson = True
-    total_lessons = len(lesson_generator)
     current_lesson = 0
     while l := next(lesson_generator):
         current_lesson += 1
@@ -175,7 +173,7 @@ def main(
                 "custom_args": custom_args,
             },
             "text": l.text,
-            "keystrokes": [e.to_dict() for e in lesson_log.events],
+            "events": [e.to_dict() for e in lesson_log.events],
             "analytics": data,
         }
         logs.append(log)
