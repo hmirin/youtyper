@@ -43,9 +43,15 @@ class TextLessonGenerator(LessonGenerator):
     ):
         super().__init__()
         self.lesson_name = lesson_name
-        self.text = [
-            line.strip()[:len_lessons] for line in text.split("\n") if line.strip()
-        ]
+        processed_texts = []
+        for line in text.split("\n"):
+            while len(line) >= len_lessons:
+                if l := line[:len_lessons]:
+                    processed_texts.append(l)
+                line = line[len_lessons:]
+            if line:
+                processed_texts.append(line)
+        self.text = processed_texts
         if _shuffle:
             shuffle(self.text)
         if not num_lessons:
