@@ -199,9 +199,7 @@ def main(
             ) as f:
                 f.write(json.dumps(log))
             current_lesson += 1
-            message = (
-                f"press enter to start lesson {current_lesson} / {len(lesson_generator)}"
-            )
+            message = f"press enter to start lesson {current_lesson} / {len(lesson_generator)}"
             win.addstr(lines + 1, 0, message)
             key = win.getkey()
     finally:
