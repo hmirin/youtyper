@@ -48,25 +48,25 @@ Use ```--lesson_type``` to choose your lesson.
 
 2. Load python script to enable custom lesson
 
-    ```youtyper --lesson_type python --generator_path path-to-your-lesson-text -- generator_name YourLessonGeneratorClassName```
+    ```youtyper --lesson_type python --generator_path path-to-your-generator --generator_name YourLessonGeneratorClassName```
     
     Use the specified ```LessonGenarator``` class to generate lessons. Example generators are available under ```examples```.
     
 
-3. Load built-in lessons
+3. Load built-in lessons (default)
 
     ```youtyper --lesson_type built-in --lesson_name right_hand_home_row```
     
-    Use the built-in lessons. See lessons/README.md for available lessons. 
+    Use the built-in lessons. See lessons/README.md for available lessons. ```--lesson_name```: lesson name of deafult lessons (default: "default_lesson")
 
 ## Customize your analyzer
 
 1. Use predefined analyzer
 
-    ```youtyper ... --analyzer cpm error_rate```
+    ```youtyper ... --analyzer cpm error_rate ...```
     
-    - ```cpm```: Character Per Minute
-    - ```error_rate```: The ratio of wrong key push
+    - ```cpm```: Character Per Minute (default: on)
+    - ```error_rate```: The ratio of wrong key push (default: on)
     
     Other options available:
     
@@ -93,7 +93,7 @@ Use ```--lesson_type``` to choose your lesson.
 2. Custom Analyzer
 
 - You must provide a custom ```Analyzer``` to use your custom analytics.
-    - ```Analyzer``` must generate printable text to show user, and dict to save with lesson.
+    - ```Analyzer``` must generate a printable text to show user and a dictionary of analytics summary to save.
         - ```Analyzer``` must implement ```analyze``` method which returns ```(Dict, str)```
     - Unknown command line options are passed to the ```LessonGenarator``` class as list. 
         - You can specify multiple ```Analyzer``` and all the unknown options are passed to all ```Analyzer```.
