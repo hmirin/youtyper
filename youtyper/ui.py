@@ -46,4 +46,4 @@ class UI(object):
             aborted = True
         finally:
             curses.endwin()
-            return  lesson_log if not aborted else None
+            return lesson_log if not aborted else None
