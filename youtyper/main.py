@@ -1,3 +1,4 @@
+import curses
 import json
 import os
 from datetime import datetime
@@ -25,7 +26,7 @@ import click
     "--lesson_name",
     "-ln",
     default="default_lesson",
-    type=str,
+    type=click.Choice(default_lesson_generators.keys(), case_sensitive=True),
     help="Choose built-in lesson to use",
 )
 @click.option(
@@ -59,7 +60,7 @@ import click
     "--analyzer",
     "-a",
     default=["cpm", "error_rate"],
-    type=click.Choice(default_analyzers.keys(), case_sensitive=False),
+    type=click.Choice(default_analyzers.keys(), case_sensitive=True),
     multiple=True,
     help="Analytics to be shown at the end of the lesson",
 )
@@ -136,57 +137,75 @@ def main(
         custom_analyzer = custom_analyzer_class(custom_args)
         analyzers.append(custom_analyzer)
 
-    p = UI()
-    logs = []
-    first_lesson = True
-    total_lessons = len(lesson_generator)
-    current_lesson = 0
-    while l := next(lesson_generator):
-        current_lesson += 1
+    try:
+        p = UI()
+        logs = []
+        current_lesson = 1
+        win = curses.initscr()
+        curses.noecho()
+        win.clear()
+        win.refresh()
+        win.clear()
+        win.refresh()
         message = (
             f"press enter to start lesson {current_lesson} / {len(lesson_generator)}"
         )
-        input_text = input(message)
-        print("\033[F", end="")
-        print(" " * (len(message) + len(input_text)), end="\r")
-        l = l  # type:Lesson
-        start_time = datetime.now()
-        lesson_log = p.start(l)
-        data = {}
-        print(f"lesson {current_lesson} / {len(lesson_generator)} result:")
-        for a in analyzers:
-            json_result, printable_result = a.analyze(lesson_log=lesson_log)
-            print(printable_result)
-            data[a.get_analytics_name()] = json_result
-        log = {
-            "lesson_name": l.lesson_name,
-            "lesson_id": l.lesson_id,
-            "command-line-options": {
-                "lesson_type": lesson_type,
-                "lesson_name": lesson_name,
-                "text_path": text_path,
-                "disable_shuffle": disable_shuffle,
-                "num_lessons": num_lessons,
-                "len_lessons": len_lessons,
-                "analyzer": analyzer,
-                "ignore_consecutive_errors": ignore_consecutive_errors,
-                "custom_analyzer": custom_analyzer,
-                "custom_lesson_generator": custom_lesson_generator,
-                "custom_args": custom_args,
-            },
-            "text": l.text,
-            "keystrokes": [e.to_dict() for e in lesson_log.events],
-            "analytics": data,
-        }
-        logs.append(log)
-        abs_dir = str(Path.home()) + "/.youtyper/"
-        os.makedirs(abs_dir, exist_ok=True)
-        with open(
-            f"{abs_dir}/{start_time:%Y%m%d_%H%M%S}_{l.lesson_name}_{l.lesson_id}.json",
-            "w",
-        ) as f:
-            f.write(json.dumps(log))
-        print("")
+        win.addstr(0, 0, message)
+        key = win.getkey()
+        while l := next(lesson_generator):
+            l = l  # type:Lesson
+            start_time = datetime.now()
+            lesson_log = p.start(l)
+            if lesson_log is None:
+                print("\nAborted!")
+                raise SystemExit()
+            data = {}
+            lines = 0
+            win.clear()
+            win.refresh()
+            message = f"lesson {current_lesson} / {len(lesson_generator)} result:"
+            win.addstr(lines, 0, message)
+            for a in analyzers:
+                json_result, printable_result = a.analyze(lesson_log=lesson_log)
+                win.addstr(lines + 1, 0, printable_result)
+                lines += len(printable_result.split("\n"))
+                data[a.get_analytics_name()] = json_result
+            log = {
+                "lesson_name": l.lesson_name,
+                "lesson_id": l.lesson_id,
+                "command-line-options": {
+                    "lesson_type": lesson_type,
+                    "lesson_name": lesson_name,
+                    "text_path": text_path,
+                    "disable_shuffle": disable_shuffle,
+                    "num_lessons": num_lessons,
+                    "len_lessons": len_lessons,
+                    "analyzer": analyzer,
+                    "ignore_consecutive_errors": ignore_consecutive_errors,
+                    "custom_analyzer": custom_analyzer,
+                    "custom_lesson_generator": custom_lesson_generator,
+                    "custom_args": custom_args,
+                },
+                "text": l.text,
+                "events": [e.to_dict() for e in lesson_log.events],
+                "analytics": data,
+            }
+            logs.append(log)
+            abs_dir = str(Path.home()) + "/.youtyper/"
+            os.makedirs(abs_dir, exist_ok=True)
+            with open(
+                f"{abs_dir}/{start_time:%Y%m%d_%H%M%S}_{l.lesson_name}_{l.lesson_id}.json",
+                "w",
+            ) as f:
+                f.write(json.dumps(log))
+            current_lesson += 1
+            message = (
+                f"press enter to start lesson {current_lesson} / {len(lesson_generator)}"
+            )
+            win.addstr(lines + 1, 0, message)
+            key = win.getkey()
+    finally:
+        curses.endwin()
 
 
 if __name__ == "__main__":
