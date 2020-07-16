@@ -17,95 +17,97 @@ Some apps provide lessons with custom texts, but which cannot be dynamically gen
 And, I want to create lessons with Python.
 
 Second, the flexibility of analytics.
-  
+
 I'm a pretty big fun of keybr.com, because of its beauty and detailed statistics. I may have spent more time watching the graphs than practicing. Though I can't create beautiful interfaces like them, I can provide more detailed statistics and even allow users to analyze their typing.   
 
 ## Naming
 
-- "y","o","u","t","p","e",and "r" are all on the upper row of the keyboard
-- These keys are why I created this app. 
-- This name may also indicates customizability of this app.
- 
- ## Install
- ```pip install youtyper```
- 
- ## Quickstart
- 
-```youtyper```: will start a standard lesson with standard analytics enabled.
- 
- ## Customize your lessons
-Use ```--lesson_type``` to choose your lesson. 
+-   "y","o","u","t","p","e",and "r" are all on the upper row of the keyboard
+-   These keys are why I created this app. 
+-   This name may also indicates customizability of this app.
 
-1. Load text to create lessons
+## Install
 
-    ```youtyper --lesson_type text --text_path path-to-your-lesson-text```
-     
+`pip install youtyper`
+
+## Quickstart
+
+`youtyper`: will start a standard lesson with standard analytics enabled.
+
+## Customize your lessons
+
+Use `--lesson_type` to choose your lesson. 
+
+1.  Load text to create lessons
+
+    `youtyper --lesson_type text --text_path path-to-your-lesson-text`
+
     Other options available:
-    
-    - ```--disable_shuffle```: Disable shuffling of lessons  (default: false)
-    - ```--num_lessons 10```: lessons to take (default: None, repeat until exit)
-    - ```--len_lessons 50```: Number of maximum characters in a lesson (default: 100)
 
-2. Load python script to enable custom lesson
+    -   `--disable_shuffle`: Disable shuffling of lessons  (default: false)
+    -   `--num_lessons 10`: lessons to take (default: None, repeat until exit)
+    -   `--len_lessons 50`: Number of maximum characters in a lesson (default: 100)
 
-    ```youtyper --lesson_type python --generator_path path-to-your-generator --generator_name YourLessonGeneratorClassName```
-    
-    Use the specified ```LessonGenarator``` class to generate lessons. Example generators are available under ```examples```.
-    
+2.  Load python script to enable custom lesson
 
-3. Load built-in lessons (default)
+    `youtyper --lesson_type python --generator_path path-to-your-generator --generator_name YourLessonGeneratorClassName`
 
-    ```youtyper --lesson_type built-in --lesson_name right_hand_home_row```
-    
-    Use the built-in lessons. See lessons/README.md for available lessons. ```--lesson_name```: lesson name of deafult lessons (default: "default_lesson")
+    Use the specified `LessonGenarator` class to generate lessons. Example generators are available under `examples`.
+
+
+3.  Load built-in lessons (default)
+
+    `youtyper --lesson_type built-in --lesson_name right_hand_home_row`
+
+    Use the built-in lessons. See lessons/README.md for available lessons. `--lesson_name`: lesson name of deafult lessons (default: "default_lesson")
 
 ## Customize your analyzer
 
-1. Use predefined analyzer
+1.  Use predefined analyzer
 
-    ```youtyper ... --analyzer cpm error_rate ...```
-    
-    - ```cpm```: Character Per Minute (default: on)
-    - ```error_rate```: The ratio of wrong key push (default: on)
-    
+    `youtyper ... --analyzer cpm error_rate ...`
+
+    -   `cpm`: Character Per Minute (default: on)
+    -   `error_rate`: The ratio of wrong key push (default: on)
+
     Other options available:
-    
-    - ```--analyzer wpm```: [To be implemented] Show words per minute
-    - ``` --ignore_consecutive_errors```: [To be implemented] Ignore the consecutive error by the same character (deafult: false)
 
-2. Use custome analyzer
+    -   `--analyzer wpm`: [To be implemented] Show words per minute
+    -   ` --ignore_consecutive_errors`: [To be implemented] Ignore the consecutive error by the same character (deafult: false)
 
-    ```youtyper ... --analyzer_path path-to-your-analyzer-file --analyzer_name YourStatisticsClassName```
+2.  Use custome analyzer
 
-    Use the specified ```Analyzer``` class to analyze lesson logs.Example analyzer are available under ```examples```.  
-    
+    `youtyper ... --analyzer_path path-to-your-analyzer-file --analyzer_name YourStatisticsClassName`
+
+    Use the specified `Analyzer` class to analyze lesson logs.Example analyzer are available under `examples`.  
 
 ## Build your own custom class
 
-1. Custom Lesson
+1.  Custom Lesson
 
-- You must provide a custom ```LessonGenerator``` to create your custom lessons.
-    - ```LessonGenarator``` must be a iterator yields ```Lesson```
-        - ```LessonGenarator``` must implement ```__len__``` method
-        - ```Lesson``` is basically text to type and metadata.
-    - Unknown command line options are passed to the ```LessonGenarator``` class as list. 
+-   You must provide a custom `LessonGenerator` to create your custom lessons.
+    -   `LessonGenarator` must be a iterator yields `Lesson`
+        -   `LessonGenarator` must implement `__len__` method
+        -   `Lesson` is basically text to type and metadata.
+    -   Unknown command line options are passed to the `LessonGenarator` class as list. 
 
-2. Custom Analyzer
+2.  Custom Analyzer
 
-- You must provide a custom ```Analyzer``` to use your custom analytics.
-    - ```Analyzer``` must generate a printable text to show user and a dictionary of analytics summary to save.
-        - ```Analyzer``` must implement ```analyze``` method which returns ```(Dict, str)```
-    - Unknown command line options are passed to the ```LessonGenarator``` class as list. 
-        - You can specify multiple ```Analyzer``` and all the unknown options are passed to all ```Analyzer```.
-            - Check your option is not shared by other analyzers unintentionally.
-         
+-   You must provide a custom `Analyzer` to use your custom analytics.
+    -   `Analyzer` must generate a printable text to show user and a dictionary of analytics summary to save.
+        -   `Analyzer` must implement `analyze` method which returns `(Dict, str)`
+    -   Unknown command line options are passed to the `LessonGenarator` class as list. 
+        -   You can specify multiple `Analyzer` and all the unknown options are passed to all `Analyzer`.
+            -   Check your option is not shared by other analyzers unintentionally.
+
 ## Lesson Log
 
-For further analytics, youtyper saves every lesson log to the ```.youtyper``` directory under the user's homedir.
+For further analytics, youtyper saves every lesson log to the `.youtyper` directory under the user's homedir.
 
-A lesson log is a json file named as ```yyyymmdd_hhmmss_[lesson_name]_[lesson_id].json```. 
+A lesson log is a json file named as `yyyymmdd_hhmmss_[lesson_name]_[lesson_id].json`. 
 
 The structure is as follows:
+
 ```json
 {
   "lesson_name": "right_hand_home_row",
