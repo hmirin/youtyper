@@ -1,12 +1,10 @@
-from distutils.version import Version
-import youtyper
 import setuptools
 
 PACKAGE_NAME = "youtyper"
 
 setuptools.setup(
     name=PACKAGE_NAME,
-    version=youtyper.__version__,
+    version="0.0.2",
     description="A customizable command line touch typing tutor",
     long_description=open("README.md").read().strip(),
     long_description_content_type="text/markdown",
