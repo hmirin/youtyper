@@ -10,7 +10,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     author="hmirin",
     url="http://github.com/hmirin/youtyper",
-    python_requires=">=3.8",
+#     python_requires=">=3.8",
     py_modules=[PACKAGE_NAME],
     install_requires=["click>=7"],
     extras_require={"dev": ["nose", "coverage",]},
