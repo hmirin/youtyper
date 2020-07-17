@@ -13,7 +13,7 @@ class UI(object):
     @staticmethod
     def start(lesson: Lesson) -> Optional[LessonLog]:
         text = lesson.text
-        mistakes = [False]*len(text)
+        mistakes = [False] * len(text)
         lesson_log = LessonLog()
         current_str = ""
         aborted = False
