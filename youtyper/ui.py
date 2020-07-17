@@ -1,4 +1,5 @@
-import curses, time
+import curses
+import time
 from typing import Optional
 
 from .lessons.lessons import Lesson
@@ -9,7 +10,8 @@ class UI(object):
     def __init__(self) -> None:
         pass
 
-    def start(self, lesson: Lesson) -> Optional[LessonLog]:
+    @staticmethod
+    def start(lesson: Lesson) -> Optional[LessonLog]:
         text = lesson.text
         lesson_log = LessonLog()
         current_str = ""
@@ -42,7 +44,7 @@ class UI(object):
                     pass
                 if current_str == text:
                     break
-        except:
+        except Exception as e:
             aborted = True
         finally:
             curses.endwin()

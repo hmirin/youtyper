@@ -1,6 +1,6 @@
 from typing import Dict
 
-from youtyper.analyzers.basic import (
+from youtyper.analyzers.built_in import (
     CharacterPerMinuteAnalyzer,
     BuiltInAnalyzer,
     ErrorRateAnalyzer,

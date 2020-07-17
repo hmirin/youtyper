@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
-from typing import List, Optional
 from random import shuffle
+from typing import List, Optional
 
 
 class Lesson(object):

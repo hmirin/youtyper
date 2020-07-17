@@ -52,14 +52,14 @@ Use `--lesson_type` to choose your lesson.
 
     `youtyper --lesson_type python --generator_path path-to-your-generator --generator_name YourLessonGeneratorClassName`
 
-    Use the specified `LessonGenarator` class to generate lessons. Example generators are available under `examples`.
+    Use the specified `LessonGenerator` class to generate lessons. Example generators are available under `examples`.
 
 
 3.  Load built-in lessons (default)
 
     `youtyper --lesson_type built-in --lesson_name right_hand_home_row`
 
-    Use the built-in lessons. See lessons/README.md for available lessons. `--lesson_name`: lesson name of deafult lessons (default: "default_lesson")
+    Use the built-in lessons. See [lessons/README.md](youtyper/lessons/README.md) for available lessons. `--lesson_name`: lesson name of default lessons (default: "default_lesson")
 
 ## Customize your analyzer
 

@@ -4,7 +4,6 @@ from datetime import timedelta
 from typing import List, Dict, Optional
 
 from youtyper.analyzers.analyzer import Analyzer
-
 from youtyper.logs import KeyStrokeLog, LessonLog
 
 
