@@ -1,13 +1,13 @@
 from youtyper.lessons.built_in import (
     PangramLessonGenerator,
     UniversalDeclarationOfHumanRightsLessonGenerator,
-    Common6GramLessonGenarator
+    Common6GramLessonGenarator,
 )
 
 default_lesson_generator_classes = [
     PangramLessonGenerator,
     UniversalDeclarationOfHumanRightsLessonGenerator,
-    Common6GramLessonGenarator
+    Common6GramLessonGenarator,
 ]
 
 default_lesson_generators = {
