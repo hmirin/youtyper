@@ -1,11 +1,14 @@
-from unittest import TestCase
-from nose.tools import ok_, eq_
-from youtyper.lessons.lessons import TextLessonGenerator, text_to_lines
 from importlib.resources import read_text
+from unittest import TestCase
+
+from nose.tools import ok_, eq_
+
+from youtyper.lessons.lessons import TextLessonGenerator, text_to_lines
 
 
 class LessonUtilityTestCase(TestCase):
-    def test_text_to_lines(self):
+    @staticmethod
+    def test_text_to_lines():
         text = "a" * 200
         eq_(len(text_to_lines(text)), 2)
         text = "a" * 10
@@ -15,7 +18,8 @@ class LessonUtilityTestCase(TestCase):
 
 
 class TextLessonTestCase(TestCase):
-    def text_lesson_test_case(self):
+    @staticmethod
+    def text_lesson_test_case():
         text = read_text("youtyper.assets", "universal_declaration_of_human_rights.txt")
         num_lessons = 10
         len_lessons = 30

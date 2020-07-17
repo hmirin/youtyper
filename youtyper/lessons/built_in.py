@@ -1,16 +1,12 @@
-from abc import abstractmethod
-from random import choices, sample
-from typing import List, Optional
+from random import sample
+from typing import List
 
 from youtyper.assets.famous_texts import (
     universal_declaration_of_human_rights_text,
-    pangrams,
+    pangrams_text,
 )
 from youtyper.lessons.lessons import (
-    LessonGenerator,
-    Lesson,
     ListTextLessonGenerator,
-    TextLessonGenerator,
     text_to_lines,
 )
 
@@ -25,6 +21,7 @@ class PangramLessonGenerator(ListTextLessonGenerator):
 
     @staticmethod
     def get_texts() -> List[str]:
+        pangrams = pangrams_text.strip().split("\n")
         return sample(pangrams, len(pangrams))
 
 
@@ -34,7 +31,7 @@ class UniversalDeclarationOfHumanRightsLessonGenerator(ListTextLessonGenerator):
 
     @staticmethod
     def get_generator_name() -> str:
-        return "Universal_Declaration_Of_Human_Rights"
+        return "universal_declaration_of_human_rights"
 
     @staticmethod
     def get_texts() -> List[str]:

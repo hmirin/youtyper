@@ -2,16 +2,15 @@ import curses
 import json
 import os
 from datetime import datetime
-from getpass import getpass
 from pathlib import Path
 from typing import Optional, List, Tuple
+
+import click
 
 from youtyper.analyzers import default_analyzers
 from youtyper.lessons import default_lesson_generators
 from youtyper.lessons.lessons import TextLessonGenerator, LessonGenerator, Lesson
 from .ui import UI
-
-import click
 
 
 @click.command(context_settings=dict(ignore_unknown_options=True))
@@ -151,7 +150,7 @@ def main(
             f"press enter to start lesson {current_lesson} / {len(lesson_generator)}"
         )
         win.addstr(0, 0, message)
-        key = win.getkey()
+        _ = win.getkey()
         while l := next(lesson_generator):
             l = l  # type:Lesson
             start_time = datetime.now()
@@ -204,7 +203,7 @@ def main(
             else:
                 message = f"press enter to finish lesson. well done!"
             win.addstr(lines + 2, 0, message)
-            key = win.getkey()
+            _ = win.getkey()
     finally:
         curses.endwin()
 

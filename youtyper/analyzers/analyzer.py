@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import List, Dict
+from typing import Dict
 
 from youtyper.logs import LessonLog
 
