@@ -14,7 +14,6 @@ setuptools.setup(
     py_modules=[PACKAGE_NAME],
     install_requires=["click>=7"],
     extras_require={"dev": ["nose", "coverage",]},
-    license="MIT License",
     zip_safe=False,
     keywords="touch-typing typing",
     classifiers=[
@@ -23,7 +22,6 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
         "Intended Audience :: End Users/Desktop",
-        "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Programming Language :: Python :: 3.8",
         "Topic :: Utilities",
