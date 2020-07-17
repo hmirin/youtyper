@@ -30,6 +30,7 @@ setuptools.setup(
         "Topic :: Education",
     ],
     packages=setuptools.find_packages(exclude=["contrib", "docs", "tests*"]),
+    include_package_data=True,
     entry_points="""
                     [console_scripts]
                     {app}={pkg}.main:main
