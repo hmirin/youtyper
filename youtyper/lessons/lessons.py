@@ -32,7 +32,7 @@ class LessonGenerator(metaclass=ABCMeta):
         return ""
 
 
-def text_to_lines(text:str, max_line_length:int=100) -> List[str]:
+def text_to_lines(text: str, max_line_length: int = 100) -> List[str]:
     processed_texts = []
     for line in text.split("\n"):
         while len(line) >= max_line_length:
@@ -45,7 +45,7 @@ def text_to_lines(text:str, max_line_length:int=100) -> List[str]:
 
 
 class ListTextLessonGenerator(LessonGenerator):
-    @abstractmethod       
+    @abstractmethod
     def __init__(self):
         super().__init__()
         self.texts: List[str] = self.get_texts()
@@ -56,7 +56,7 @@ class ListTextLessonGenerator(LessonGenerator):
             return None
         self.idx += 1
         return Lesson(
-            text=self.texts[self.idx-1],
+            text=self.texts[self.idx - 1],
             lesson_id=self.get_generator_name() + "_" + str(self.idx),
             lesson_name=self.get_generator_name(),
         )
@@ -74,6 +74,7 @@ class ListTextLessonGenerator(LessonGenerator):
     def get_texts() -> List[str]:
         return [""]
 
+
 class TextLessonGenerator(LessonGenerator):
     def __init__(
         self,
@@ -85,7 +86,7 @@ class TextLessonGenerator(LessonGenerator):
     ):
         super().__init__()
         self.lesson_name = lesson_name
-        self.texts = text_to_lines(text,len_lessons)
+        self.texts = text_to_lines(text, len_lessons)
         if _shuffle:
             shuffle(self.texts)
         if num_lessons:
@@ -97,7 +98,7 @@ class TextLessonGenerator(LessonGenerator):
             return None
         self.idx += 1
         return Lesson(
-            text=self.texts[self.idx-1],
+            text=self.texts[self.idx - 1],
             lesson_id=self.get_generator_name() + "_" + str(self.idx),
             lesson_name=self.get_generator_name(),
         )

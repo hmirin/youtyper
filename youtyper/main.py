@@ -202,9 +202,9 @@ def main(
             if current_lesson <= len(lesson_generator):
                 message = f"press enter to start lesson {current_lesson} / {len(lesson_generator)}"
             else:
-                message = f"press enter to finish lesson. well done!"                
+                message = f"press enter to finish lesson. well done!"
             win.addstr(lines + 2, 0, message)
-            key = win.getkey()            
+            key = win.getkey()
     finally:
         curses.endwin()
 
