@@ -4,7 +4,7 @@ PACKAGE_NAME = "youtyper"
 
 setuptools.setup(
     name=PACKAGE_NAME,
-    version="0.0.3",
+    version="0.1.0",
     description="A customizable command line touch typing tutor",
     long_description=open("README.md").read().strip(),
     long_description_content_type="text/markdown",
