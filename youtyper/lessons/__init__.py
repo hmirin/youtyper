@@ -1,4 +1,4 @@
-from youtyper.lessons.basic import (
+from youtyper.lessons.built_in import (
     PangramLessonGenerator,
     UniversalDeclarationOfHumanRightsLessonGenerator,
 )
