@@ -6,7 +6,13 @@ from youtyper.assets.famous_texts import (
     universal_declaration_of_human_rights_text,
     pangrams,
 )
-from youtyper.lessons.lessons import LessonGenerator, Lesson, ListTextLessonGenerator, TextLessonGenerator, text_to_lines
+from youtyper.lessons.lessons import (
+    LessonGenerator,
+    Lesson,
+    ListTextLessonGenerator,
+    TextLessonGenerator,
+    text_to_lines,
+)
 
 
 class PangramLessonGenerator(ListTextLessonGenerator):
@@ -19,7 +25,7 @@ class PangramLessonGenerator(ListTextLessonGenerator):
 
     @staticmethod
     def get_texts() -> List[str]:
-        return  sample(pangrams, len(pangrams))
+        return sample(pangrams, len(pangrams))
 
 
 class UniversalDeclarationOfHumanRightsLessonGenerator(ListTextLessonGenerator):
