@@ -44,7 +44,7 @@ class UI(object):
                     pass
                 if current_str == text:
                     break
-        except Exception as e:
+        except:
             aborted = True
         finally:
             curses.endwin()
