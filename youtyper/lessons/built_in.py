@@ -4,7 +4,8 @@ from typing import List
 from youtyper.assets.famous_texts import (
     universal_declaration_of_human_rights_text,
     pangrams_text,
-    common_english_6_grams)
+    common_english_6_grams,
+)
 from youtyper.lessons.lessons import (
     ListTextLessonGenerator,
     text_to_lines,
@@ -49,4 +50,4 @@ class Common6GramLessonGenarator(ListTextLessonGenerator):
     @staticmethod
     def get_texts() -> List[str]:
         texts = text_to_lines(common_english_6_grams)
-        return sample(texts,len(texts))
+        return sample(texts, len(texts))
