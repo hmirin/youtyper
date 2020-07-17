@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Optional
+from typing import List, Optional
 from random import shuffle
 
 
@@ -32,6 +32,48 @@ class LessonGenerator(metaclass=ABCMeta):
         return ""
 
 
+def text_to_lines(text:str, max_line_length:int=100) -> List[str]:
+    processed_texts = []
+    for line in text.split("\n"):
+        while len(line) >= max_line_length:
+            l = line[:max_line_length]
+            processed_texts.append(l)
+            line = line[max_line_length:]
+        if line:
+            processed_texts.append(line)
+    return processed_texts
+
+
+class ListTextLessonGenerator(LessonGenerator):
+    @abstractmethod       
+    def __init__(self):
+        super().__init__()
+        self.texts: List[str] = self.get_texts()
+        self.idx = 0
+
+    def __next__(self) -> Optional[Lesson]:
+        if self.idx >= len(self.texts):
+            return None
+        self.idx += 1
+        return Lesson(
+            text=self.texts[self.idx-1],
+            lesson_id=self.get_generator_name() + "_" + str(self.idx),
+            lesson_name=self.get_generator_name(),
+        )
+
+    def __len__(self):
+        return len(self.texts)
+
+    @staticmethod
+    @abstractmethod
+    def get_generator_name() -> str:
+        return ""
+
+    @staticmethod
+    @abstractmethod
+    def get_texts() -> List[str]:
+        return [""]
+
 class TextLessonGenerator(LessonGenerator):
     def __init__(
         self,
@@ -43,35 +85,25 @@ class TextLessonGenerator(LessonGenerator):
     ):
         super().__init__()
         self.lesson_name = lesson_name
-        processed_texts = []
-        for line in text.split("\n"):
-            while len(line) >= len_lessons:
-                if l := line[:len_lessons]:
-                    processed_texts.append(l)
-                line = line[len_lessons:]
-            if line:
-                processed_texts.append(line)
-        self.text = processed_texts
+        self.texts = text_to_lines(text,len_lessons)
         if _shuffle:
-            shuffle(self.text)
-        if not num_lessons:
-            self.n = len(self.text)
-        else:
-            self.n = min(len(self.text), num_lessons)
-        self.c = 0
+            shuffle(self.texts)
+        if num_lessons:
+            self.texts = self.texts[:num_lessons]
+        self.idx = 0
 
     def __next__(self) -> Optional[Lesson]:
-        if self.n and self.c >= self.n:
+        if self.idx >= len(self.texts):
             return None
-        self.c += 1
+        self.idx += 1
         return Lesson(
-            text=self.text[self.c],
-            lesson_id=self.lesson_name + "_" + str(self.c),
-            lesson_name=self.lesson_name,
+            text=self.texts[self.idx-1],
+            lesson_id=self.get_generator_name() + "_" + str(self.idx),
+            lesson_name=self.get_generator_name(),
         )
 
     def __len__(self):
-        return self.n
+        return len(self.texts)
 
     @staticmethod
     def get_generator_name() -> str:
