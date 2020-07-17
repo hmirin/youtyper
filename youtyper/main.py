@@ -199,8 +199,11 @@ def main(
             ) as f:
                 f.write(json.dumps(log))
             current_lesson += 1
-            message = f"press enter to start lesson {current_lesson} / {len(lesson_generator)}"
-            win.addstr(lines + 1, 0, message)
+            if current_lesson <= len(lesson_generator):
+                message = f"press enter to start lesson {current_lesson} / {len(lesson_generator)}"
+            else:
+                message = f"press enter to finish lesson. well done!"
+            win.addstr(lines + 2, 0, message)
             key = win.getkey()
     finally:
         curses.endwin()
