@@ -36,8 +36,7 @@ def text_to_lines(text: str, max_line_length: int = 100) -> List[str]:
     processed_texts = []
     for line in text.split("\n"):
         while len(line) >= max_line_length:
-            l = line[:max_line_length]
-            processed_texts.append(l)
+            processed_texts.append(line[:max_line_length])
             line = line[max_line_length:]
         if line:
             processed_texts.append(line)

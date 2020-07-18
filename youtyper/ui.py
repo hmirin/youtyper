@@ -54,9 +54,6 @@ class LessonWindow(object):
             curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
             curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED)
             curses.noecho()
-            missed = False
-            key = ""
-            target = ""
             while True:
                 win.clear()
                 curses.curs_set(0)
@@ -98,13 +95,11 @@ class LessonWindow(object):
                 if key == target:
                     if first_miss:
                         mistakes[len(current_str)] = first_miss
-                    missed = False
                     current_str = current_str + key
                     first_miss = ""
                 elif key:
                     curses.flash()
                     mistakes[len(current_str)] = key
-                    missed = True
                     if not first_miss:
                         first_miss = key
                 else:

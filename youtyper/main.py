@@ -82,7 +82,7 @@ from .ui import LessonWindow, show_and_calculate_analytics
     "-cl",
     type=(str, str),
     default=(None, None),
-    help='Custom lessson generator path and class name. Available if lesson_type="python"',
+    help='Custom lesson generator path and class name. Available if lesson_type="python"',
 )
 @click.argument("custom_args", nargs=-1, type=click.UNPROCESSED)
 def main(
@@ -151,15 +151,14 @@ def main(
         )
         win.addstr(0, 0, message)
         _ = win.getkey()
-        while l := next(lesson_generator):
-            l = l  # type:Lesson
+        while lesson := next(lesson_generator):
+            lesson: Lesson = lesson
             start_time = datetime.now()
-            lesson_log = p.start(l, analyzers, lesson_logs)
+            lesson_log = p.start(lesson, analyzers, lesson_logs)
             if lesson_log is None:
                 print("\nAborted!")
                 raise SystemExit()
             lesson_logs.append(lesson_log)
-            data = {}
             win.clear()
             win.refresh()
             message = f"lesson {current_lesson} / {len(lesson_generator)} result:"
@@ -169,8 +168,8 @@ def main(
                 win, lines, analyzers, lesson_log, lesson_logs
             )
             log = {
-                "lesson_name": l.lesson_name,
-                "lesson_id": l.lesson_id,
+                "lesson_name": lesson.lesson_name,
+                "lesson_id": lesson.lesson_id,
                 "command-line-options": {
                     "lesson_type": lesson_type,
                     "lesson_name": lesson_name,
@@ -184,7 +183,7 @@ def main(
                     "custom_lesson_generator": custom_lesson_generator,
                     "custom_args": custom_args,
                 },
-                "text": l.text,
+                "text": lesson.text,
                 "events": [e.to_dict() for e in lesson_log.events],
                 "analytics": {
                     a.analyzer_name: a.json_result for a in current_lesson_analytics
@@ -194,7 +193,7 @@ def main(
             abs_dir = str(Path.home()) + "/.youtyper/"
             os.makedirs(abs_dir, exist_ok=True)
             with open(
-                f"{abs_dir}/{start_time:%Y%m%d_%H%M%S}_{l.lesson_name}_{l.lesson_id}.json",
+                f"{abs_dir}/{start_time:%Y%m%d_%H%M%S}_{lesson.lesson_name}_{lesson.lesson_id}.json",
                 "w",
             ) as f:
                 f.write(json.dumps(log))

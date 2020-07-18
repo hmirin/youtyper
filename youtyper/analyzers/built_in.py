@@ -17,24 +17,24 @@ class BuiltInAnalyzer(Analyzer):
 def time_to_push_correct_key(events: List[KeyStrokeLog]):
     last_time = None
     accumulated_time = timedelta()
-    elasped_time_dict: Dict[str, List[timedelta]] = defaultdict(list)
+    elapsed_time_dict: Dict[str, List[timedelta]] = defaultdict(list)
     for key_stroke_log in events:
         if last_time is None:
             last_time = key_stroke_log.timestamp
         else:
             current_time = key_stroke_log.timestamp
-            elasped_time = current_time - last_time
+            elapsed_time = current_time - last_time
             if key_stroke_log.target == key_stroke_log.key:
-                elasped_time_dict[key_stroke_log.target].append(
-                    elasped_time + accumulated_time
+                elapsed_time_dict[key_stroke_log.target].append(
+                    elapsed_time + accumulated_time
                 )
                 accumulated_time = timedelta()
             else:
-                accumulated_time += elasped_time
-    return elasped_time_dict
+                accumulated_time += elapsed_time
+    return elapsed_time_dict
 
 
-def elasped_seconds_and_num_keys(
+def elapsed_seconds_and_num_keys(
     lesson_log: LessonLog, key: str = None, tail: Optional[int] = None
 ) -> (int, timedelta):
     if tail is not None:
@@ -57,7 +57,7 @@ class CharacterPerMinuteAnalyzer(BuiltInAnalyzer):
         super().__init__()
 
     def analyze_lesson(self, lesson_log: LessonLog) -> Analytics:
-        num_keys, elapsed_time = elasped_seconds_and_num_keys(lesson_log)
+        num_keys, elapsed_time = elapsed_seconds_and_num_keys(lesson_log)
         seconds = elapsed_time.total_seconds()
         if seconds > 0:
             cpm = num_keys / (seconds / 60)

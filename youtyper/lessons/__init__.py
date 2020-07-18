@@ -1,5 +1,5 @@
 from youtyper.lessons.built_in import (
-    Common6GramLessonGenarator,
+    Common6GramLessonGenerator,
     PangramLessonGenerator,
     UniversalDeclarationOfHumanRightsLessonGenerator,
 )
@@ -7,7 +7,7 @@ from youtyper.lessons.built_in import (
 default_lesson_generator_classes = [
     PangramLessonGenerator,
     UniversalDeclarationOfHumanRightsLessonGenerator,
-    Common6GramLessonGenarator,
+    Common6GramLessonGenerator,
 ]
 
 default_lesson_generators = {
