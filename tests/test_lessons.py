@@ -1,7 +1,7 @@
 from importlib.resources import read_text
 from unittest import TestCase
 
-from nose.tools import ok_, eq_
+from nose.tools import eq_, ok_
 
 from youtyper.lessons.lessons import TextLessonGenerator, text_to_lines
 
