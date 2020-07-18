@@ -2,14 +2,11 @@ from random import sample
 from typing import List
 
 from youtyper.assets.famous_texts import (
-    universal_declaration_of_human_rights_text,
-    pangrams_text,
     common_english_6_grams,
+    pangrams_text,
+    universal_declaration_of_human_rights_text,
 )
-from youtyper.lessons.lessons import (
-    ListTextLessonGenerator,
-    text_to_lines,
-)
+from youtyper.lessons.lessons import ListTextLessonGenerator, text_to_lines
 
 
 class PangramLessonGenerator(ListTextLessonGenerator):
