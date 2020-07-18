@@ -33,4 +33,4 @@ jobs:
       env:
         CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}      
       with:
-        coverageCommand: coverage -m nose
+        coverageCommand: coverage run -m nose
