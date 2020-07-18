@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from typing import Tuple
 
-from youtyper.lessons.lessons import LessonGenerator, Lesson
+from youtyper.lessons.lessons import Lesson, LessonGenerator
 
 
 class ExampleGenerator(LessonGenerator):

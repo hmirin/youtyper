@@ -1,7 +1,7 @@
 from importlib.resources import read_text
 from unittest import TestCase
 
-from nose.tools import ok_, eq_
+from nose.tools import eq_, ok_
 
 from youtyper.lessons.lessons import TextLessonGenerator, text_to_lines
 
@@ -41,14 +41,14 @@ class TextLessonTestCase(TestCase):
             len_lessons=len_lessons,
             _shuffle=True,
         )
-        l = next(g)
-        while l:
-            print(l.text)
+        lesson = next(g)
+        while lesson:
+            print(lesson.text)
             ok_(
-                0 < len(l.text) <= len_lessons,
+                0 < len(lesson.text) <= len_lessons,
                 "TextLessonGenerator should respect len_lessons",
             )
-            l = next(g)
+            lesson = next(g)
         g1 = TextLessonGenerator(
             "test",
             text,
