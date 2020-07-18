@@ -43,16 +43,16 @@ class LessonWindow(object):
         if former_lesson_logs is None:
             former_lesson_logs = list()
         text = lesson.text
-        mistakes = [False] * len(text)
+        mistakes = [""] * len(text)
+        first_miss = ""
         lesson_log = LessonLog()
         current_str = ""
         aborted = False
         try:
             win = curses.initscr()
             curses.start_color()
-            curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
-            curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
-            curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_RED)
+            curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+            curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED)
             curses.noecho()
             missed = False
             key = ""
@@ -60,8 +60,9 @@ class LessonWindow(object):
             while True:
                 win.clear()
                 curses.curs_set(0)
-                if missed:
-                    win.addstr(0, 0, "miss! " + key + "->" + target)
+                missed_str = "".join([c if c else " " for c in mistakes])
+                win.addstr(0, 8, missed_str)
+                win.addstr(0, 0, "Miss: ")
                 win.addstr(1, 0, "Lesson: ")
                 win.addstr(1, 8, text)
                 win.attron(curses.A_BOLD)
@@ -70,19 +71,19 @@ class LessonWindow(object):
                     if idx > len(current_str):
                         break
                     if mistake:
-                        win.attron(curses.color_pair(2))
+                        win.attron(curses.color_pair(1))
                         win.addstr(1, 8 + idx, char)
-                        win.attroff(curses.color_pair(2))
+                        win.attroff(curses.color_pair(1))
                     else:
                         win.addstr(1, 8 + idx, char)
                 if text[len(current_str)] == " ":
-                    win.attron(curses.color_pair(3))
+                    win.attron(curses.color_pair(2))
                     win.addstr(1, 8 + len(current_str), text[len(current_str)])
-                    win.attroff(curses.color_pair(3))
+                    win.attroff(curses.color_pair(2))
                 else:
-                    win.attron(curses.color_pair(3))
+                    win.attron(curses.color_pair(2))
                     win.addstr(1, 8 + len(current_str), text[len(current_str)])
-                    win.attroff(curses.color_pair(3))
+                    win.attroff(curses.color_pair(2))
                 win.attroff(curses.A_BOLD)
                 lines = 3
                 show_and_calculate_analytics(
@@ -95,12 +96,17 @@ class LessonWindow(object):
                 lesson_log.record_key(key, target)
                 win.refresh()
                 if key == target:
+                    if first_miss:
+                        mistakes[len(current_str)] = first_miss
                     missed = False
                     current_str = current_str + key
+                    first_miss = ""
                 elif key:
                     curses.flash()
-                    mistakes[len(current_str)] = True
+                    mistakes[len(current_str)] = key
                     missed = True
+                    if not first_miss:
+                        first_miss = key
                 else:
                     pass
                 if current_str == text:
