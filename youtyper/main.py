@@ -3,14 +3,15 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
 
 import click
 
 from youtyper.analyzers import default_analyzers
 from youtyper.lessons import default_lesson_generators
-from youtyper.lessons.lessons import TextLessonGenerator, LessonGenerator, Lesson
-from .ui import UI
+from youtyper.lessons.lessons import Lesson, LessonGenerator, TextLessonGenerator
+
+from .ui import LessonWindow, show_and_calculate_analytics
 
 
 @click.command(context_settings=dict(ignore_unknown_options=True))
@@ -137,13 +138,12 @@ def main(
         analyzers.append(custom_analyzer)
 
     try:
-        p = UI()
+        p = LessonWindow()
+        lesson_logs = []
         logs = []
         current_lesson = 1
         win = curses.initscr()
         curses.noecho()
-        win.clear()
-        win.refresh()
         win.clear()
         win.refresh()
         message = (
@@ -154,21 +154,20 @@ def main(
         while l := next(lesson_generator):
             l = l  # type:Lesson
             start_time = datetime.now()
-            lesson_log = p.start(l)
+            lesson_log = p.start(l, analyzers, lesson_logs)
             if lesson_log is None:
                 print("\nAborted!")
                 raise SystemExit()
+            lesson_logs.append(lesson_log)
             data = {}
-            lines = 0
             win.clear()
             win.refresh()
             message = f"lesson {current_lesson} / {len(lesson_generator)} result:"
-            win.addstr(lines, 0, message)
-            for a in analyzers:
-                json_result, printable_result = a.analyze(lesson_log=lesson_log)
-                win.addstr(lines + 1, 0, printable_result)
-                lines += len(printable_result.split("\n"))
-                data[a.get_analytics_name()] = json_result
+            win.addstr(0, 0, message)
+            lines = 3
+            (current_lesson_analytics, _,) = show_and_calculate_analytics(
+                win, lines, analyzers, lesson_log, lesson_logs
+            )
             log = {
                 "lesson_name": l.lesson_name,
                 "lesson_id": l.lesson_id,
@@ -187,7 +186,9 @@ def main(
                 },
                 "text": l.text,
                 "events": [e.to_dict() for e in lesson_log.events],
-                "analytics": data,
+                "analytics": {
+                    a.analyzer_name: a.json_result for a in current_lesson_analytics
+                },
             }
             logs.append(log)
             abs_dir = str(Path.home()) + "/.youtyper/"
@@ -202,7 +203,8 @@ def main(
                 message = f"press enter to start lesson {current_lesson} / {len(lesson_generator)}"
             else:
                 message = f"press enter to finish lesson. well done!"
-            win.addstr(lines + 2, 0, message)
+            curses.curs_set(1)
+            win.addstr(1, 0, message)
             _ = win.getkey()
     finally:
         curses.endwin()
