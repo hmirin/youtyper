@@ -26,11 +26,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install nose
+        pip install coverage nose
         pip install -e .[dev]
     - name: Test and Coverage
       uses: paambaati/codeclimate-action@v2.6.0
       env:
         CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}      
       with:
-        coverageCommand: python -m nose --with-coverage
+        coverageCommand: coverage run -m nose
