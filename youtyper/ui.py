@@ -1,37 +1,66 @@
 import curses
 import time
-from typing import Optional
+from typing import List, Optional, Tuple
 
+from .analyzers.analyzer import Analytics, Analyzer, calculate_all_analytics
 from .lessons.lessons import Lesson
 from .logs import LessonLog
 
 
-class UI(object):
+def show_and_calculate_analytics(
+    win: curses.window,
+    start_line: int,
+    analyzers: List[Analyzer],
+    current_lesson_log: LessonLog,
+    former_lesson_logs: List[LessonLog],
+) -> Tuple[List[Analytics], List[Analytics]]:
+    lines = start_line
+    single_lesson_analytics, whole_lesson_analytics = calculate_all_analytics(
+        current_lesson_log, former_lesson_logs, analyzers
+    )
+    win.addstr(lines, 0, "Current Lesson:")
+    for analytics in single_lesson_analytics:
+        win.addstr(lines + 1, 0, analytics.printable_result)
+        lines += len(analytics.printable_result.split("\n"))
+    lines += 2
+    win.addstr(lines, 0, "Whole Lesson:")
+    for analytics in whole_lesson_analytics:
+        win.addstr(lines + 1, 0, analytics.printable_result)
+        lines += len(analytics.printable_result.split("\n"))
+    return single_lesson_analytics, whole_lesson_analytics
+
+
+class LessonWindow(object):
     def __init__(self) -> None:
         pass
 
     @staticmethod
-    def start(lesson: Lesson) -> Optional[LessonLog]:
+    def start(
+        lesson: Lesson,
+        analyzers: List[Analyzer],
+        former_lesson_logs: Optional[List[LessonLog]] = None,
+    ) -> Optional[LessonLog]:
+        if former_lesson_logs is None:
+            former_lesson_logs = list()
         text = lesson.text
-        mistakes = [False] * len(text)
+        mistakes = [""] * len(text)
+        first_miss = ""
         lesson_log = LessonLog()
         current_str = ""
         aborted = False
         try:
             win = curses.initscr()
             curses.start_color()
-            curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
-            curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+            curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+            curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED)
             curses.noecho()
-            missed = False
-            key = ""
-            target = ""
             while True:
                 win.clear()
-                if missed:
-                    win.addstr(0, 0, "miss! " + key + "->" + target)
+                curses.curs_set(0)
+                missed_str = "".join([c if c else " " for c in mistakes])
+                win.addstr(0, 8, missed_str)
+                win.addstr(0, 0, "Miss: ")
                 win.addstr(1, 0, "Lesson: ")
-                win.addstr(2, 0, "You:    ")
                 win.addstr(1, 8, text)
                 win.attron(curses.A_BOLD)
                 win.addstr(1, 8, current_str)
@@ -39,28 +68,40 @@ class UI(object):
                     if idx > len(current_str):
                         break
                     if mistake:
-                        win.attron(curses.color_pair(2))
+                        win.attron(curses.color_pair(1))
                         win.addstr(1, 8 + idx, char)
-                        win.attroff(curses.color_pair(2))
+                        win.attroff(curses.color_pair(1))
                     else:
                         win.addstr(1, 8 + idx, char)
-                win.attron(curses.color_pair(1))
-                win.addstr(1, 8 + len(current_str), text[len(current_str)])
-                win.attroff(curses.color_pair(1))
+                if text[len(current_str)] == " ":
+                    win.attron(curses.color_pair(2))
+                    win.addstr(1, 8 + len(current_str), text[len(current_str)])
+                    win.attroff(curses.color_pair(2))
+                else:
+                    win.attron(curses.color_pair(2))
+                    win.addstr(1, 8 + len(current_str), text[len(current_str)])
+                    win.attroff(curses.color_pair(2))
                 win.attroff(curses.A_BOLD)
-                win.addstr(2, 8, current_str)
+                lines = 3
+                show_and_calculate_analytics(
+                    win, lines, analyzers, lesson_log, former_lesson_logs
+                )
+                win.addstr(2, 8 + len(current_str), "")
                 time.sleep(0.05)
                 key = win.getkey()
                 target = text[len(current_str)]
                 lesson_log.record_key(key, target)
                 win.refresh()
                 if key == target:
-                    missed = False
+                    if first_miss:
+                        mistakes[len(current_str)] = first_miss
                     current_str = current_str + key
+                    first_miss = ""
                 elif key:
                     curses.flash()
-                    mistakes[len(current_str)] = True
-                    missed = True
+                    mistakes[len(current_str)] = key
+                    if not first_miss:
+                        first_miss = key
                 else:
                     pass
                 if current_str == text:

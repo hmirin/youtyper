@@ -12,7 +12,7 @@ class KeyStrokeLog(object):
         return {
             "timestamp": str(self.timestamp),
             "key": self.key,
-            "targert": self.target,
+            "target": self.target,
         }
 
 
