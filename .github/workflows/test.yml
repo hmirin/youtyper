@@ -36,5 +36,6 @@ jobs:
         chmod +x ./cc-test-reporter
         ./cc-test-reporter before-build
         coverage run -m nose
+        coverage xml
         ./cc-test-reporter format-coverage -t coverage.py
         ./cc-test-reporter upload-coverage
