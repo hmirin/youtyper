@@ -36,7 +36,7 @@ class UniversalDeclarationOfHumanRightsLessonGenerator(ListTextLessonGenerator):
         return text_to_lines(universal_declaration_of_human_rights_text)
 
 
-class Common6GramLessonGenarator(ListTextLessonGenerator):
+class Common6GramLessonGenerator(ListTextLessonGenerator):
     def __init__(self) -> None:
         super().__init__()
 
