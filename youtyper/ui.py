@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 import curses
 import time
-from typing import List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
-from .analyzers.analyzer import Analytics, Analyzer, calculate_all_analytics
-from .lessons.lessons import Lesson
+if TYPE_CHECKING:
+    from .analyzers.analyzer import Analytics, Analyzer
+    from .lessons.lessons import Lesson
+
+from .analyzers.analyzer import calculate_all_analytics
 from .logs import LessonLog
 
 
