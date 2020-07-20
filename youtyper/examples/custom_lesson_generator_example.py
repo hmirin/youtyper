@@ -1,7 +1,10 @@
-from argparse import ArgumentParser
-from typing import Tuple
+from __future__ import annotations
 
-from youtyper.lessons.lessons import Lesson, LessonGenerator
+from argparse import ArgumentParser
+from typing import TYPE_CHECKING, Tuple
+
+if TYPE_CHECKING:
+    from youtyper.lessons.lessons import Lesson, LessonGenerator
 
 
 class ExampleGenerator(LessonGenerator):

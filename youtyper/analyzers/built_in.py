@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 from abc import abstractmethod
 from collections import defaultdict
 from datetime import timedelta
-from typing import Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from youtyper.analyzers.analyzer import Analytics, Analyzer
-from youtyper.logs import KeyStrokeLog, LessonLog
+
+if TYPE_CHECKING:
+    from youtyper.logs import KeyStrokeLog, LessonLog
 
 
 class BuiltInAnalyzer(Analyzer):
@@ -36,7 +40,7 @@ def time_to_push_correct_key(events: List[KeyStrokeLog]):
 
 def elapsed_seconds_and_num_keys(
     lesson_log: LessonLog, key: str = None, tail: Optional[int] = None
-) -> (int, timedelta):
+) -> Tuple[int, timedelta]:
     if tail is not None:
         events = lesson_log.events[-tail:]
     else:
