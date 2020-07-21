@@ -18,7 +18,7 @@ And, I want to create lessons with Python.
 
 Second, the flexibility of analytics.
 
-I'm a pretty big fun of keybr.com, because of its beauty and detailed statistics. I may have spent more time watching the graphs than practicing. Though I can't create beautiful interfaces like them, I can provide more detailed statistics and even allow users to analyze their typing.   
+I'm a pretty big fun of keybr.com, because of its beauty and detailed statistics. I may have spent more time watching the graphs than practicing. Though I can't create beautiful interfaces like them, I can provide more detailed statistics and even allow users to analyze their typing.
 
 ## Naming
 
