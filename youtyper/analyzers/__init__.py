@@ -1,10 +1,6 @@
 from typing import Callable, Dict
 
-from youtyper.analyzers.built_in import (
-    BuiltInAnalyzer,
-    CharacterPerMinuteAnalyzer,
-    ErrorRateAnalyzer,
-)
+from youtyper.analyzers.built_in import CharacterPerMinuteAnalyzer, ErrorRateAnalyzer
 
 default_analyzer_classes = [CharacterPerMinuteAnalyzer, ErrorRateAnalyzer]
 
