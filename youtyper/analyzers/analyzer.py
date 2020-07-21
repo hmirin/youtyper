@@ -1,7 +1,10 @@
-from abc import ABCMeta, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from __future__ import annotations
 
-from youtyper.logs import LessonLog
+from abc import ABCMeta, abstractmethod
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+
+if TYPE_CHECKING:
+    from youtyper.logs import LessonLog
 
 
 class Analytics(object):

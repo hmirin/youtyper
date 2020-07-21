@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import curses
 import json
 import os
@@ -8,49 +10,11 @@ from typing import List, Optional, Tuple
 import click
 
 from youtyper.analyzers import default_analyzers
-from youtyper.analyzers.analyzer import load_custom_analyzer
+from youtyper.cli import CLIOptions
 from youtyper.lessons import default_lesson_generators
-from youtyper.lessons.lessons import Lesson, LessonGenerator, TextLessonGenerator
+from youtyper.logs import save_to_log
 
 from .ui import LessonWindow, show_and_calculate_analytics
-
-
-def select_lesson_generator(
-    lesson_type: str,
-    lesson_name: str,
-    text_path: str,
-    num_lessons: int,
-    len_lessons: int,
-    disable_shuffle: bool,
-    custom_lesson_generator,
-    custom_args,
-) -> LessonGenerator:
-    # Create LessonGenerator
-    if lesson_type == "built-in":
-        lesson_generator = default_lesson_generators[lesson_name]()
-    elif lesson_type == "text":
-        if not text_path:
-            raise ValueError("You must specify text_path to generate lessons.")
-        if not os.path.exists(text_path):
-            raise FileNotFoundError("You must specify valid text_path.")
-        try:
-            text = open(text_path, encoding="ascii").read()
-        except UnicodeDecodeError as e:
-            print(e.__traceback__)
-            raise ValueError("Only accepts ascii file for text_path")
-        filename = os.path.splitext(text_path)[0]
-        lesson_generator = TextLessonGenerator(
-            text, filename, num_lessons, len_lessons, not disable_shuffle
-        )
-    elif lesson_type == "python":
-        f = open(custom_lesson_generator[0])
-        code = f.read()
-        exec(code, globals())
-        custom_lesson_generator_class = globals()[custom_lesson_generator[1]]
-        lesson_generator = custom_lesson_generator_class(custom_args)
-    else:
-        raise
-    return lesson_generator
 
 
 @click.command(context_settings=dict(ignore_unknown_options=True))
@@ -137,28 +101,22 @@ def main(
     custom_lesson_generator: Tuple[str, str],
     custom_args,
 ):
-    if custom_lesson_generator[0] is None and custom_lesson_generator[1] is None:
-        custom_lesson_generator = []
-
-    lesson_generator = select_lesson_generator(
+    options = CLIOptions(
         lesson_type,
         lesson_name,
         text_path,
+        disable_shuffle,
         num_lessons,
         len_lessons,
-        disable_shuffle,
+        analyzer,
+        ignore_consecutive_errors,
+        custom_analyzer,
         custom_lesson_generator,
         custom_args,
     )
-
-    # Create Analyzer
-    analyzers = [default_analyzers[name]() for name in analyzer]
-    analyzers += [
-        load_custom_analyzer(analyzer_path, analyzer_classname, custom_args)
-        for analyzer_path, analyzer_classname in custom_analyzer
-    ]
-
     try:
+        lesson_generator = options.lesson_generator
+        analyzers = options.analyzers
         p = LessonWindow()
         lesson_logs = []
         logs = []
@@ -186,28 +144,7 @@ def main(
             (current_lesson_analytics, _,) = show_and_calculate_analytics(
                 win, 3, analyzers, lesson_log, lesson_logs
             )
-            log = {
-                "lesson_name": lesson.lesson_name,
-                "lesson_id": lesson.lesson_id,
-                "command-line-options": {
-                    "lesson_type": lesson_type,
-                    "lesson_name": lesson_name,
-                    "text_path": text_path,
-                    "disable_shuffle": disable_shuffle,
-                    "num_lessons": num_lessons,
-                    "len_lessons": len_lessons,
-                    "analyzer": analyzer,
-                    "ignore_consecutive_errors": ignore_consecutive_errors,
-                    "custom_analyzer": custom_analyzer,
-                    "custom_lesson_generator": custom_lesson_generator,
-                    "custom_args": custom_args,
-                },
-                "text": lesson.text,
-                "events": [e.to_dict() for e in lesson_log.events],
-                "analytics": {
-                    a.analyzer_name: a.json_result for a in current_lesson_analytics
-                },
-            }
+            log = save_to_log(lesson, lesson_log, current_lesson_analytics, options)
             logs.append(log)
             abs_dir = str(Path.home()) + "/.youtyper/"
             os.makedirs(abs_dir, exist_ok=True)

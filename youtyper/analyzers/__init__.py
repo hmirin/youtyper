@@ -1,7 +1,6 @@
 from typing import Callable, Dict
 
 from youtyper.analyzers.built_in import (
-    BuiltInAnalyzer,
     CharacterPerMinuteAnalyzer,
     ErrorRateAnalyzer,
     MissedKeyRanking,
