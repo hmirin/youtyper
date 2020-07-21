@@ -5,6 +5,8 @@ from collections import defaultdict
 from datetime import timedelta
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
+import numpy as np
+
 from youtyper.analyzers.analyzer import Analytics, Analyzer
 
 if TYPE_CHECKING:
@@ -148,3 +150,70 @@ class ErrorRateAnalyzer(BuiltInAnalyzer):
     @staticmethod
     def get_abbreviated_name() -> str:
         return "error_rate"
+
+
+class MissedKeyRanking(BuiltInAnalyzer):
+    def __init__(self):
+        super().__init__()
+
+    def analyze_lesson(self, lesson_log: LessonLog) -> Analytics:
+        events = lesson_log.events
+        keys = sorted(list(set([e.target for e in events] + [e.key for e in events])))
+        key2idx = {key: idx for idx, key in enumerate(keys)}
+        matrix = np.zeros([len(keys), len(keys)])
+        for e in events:
+            if e.target == e.key:
+                continue
+            matrix[key2idx[e.target], key2idx[e.key]] += 1
+        prob_matrix = matrix / np.sum(matrix)
+        flatten_matrix = np.ravel(prob_matrix)
+        n = 5
+        top_n = -np.sort(-flatten_matrix)[:n]
+        keys_to_show = []
+        for prob in top_n:
+            xs, ys = np.where(prob_matrix == prob)
+            for x, y in zip(xs, ys):
+                keys_to_show.append((keys[x], keys[y], prob_matrix[x, y]))
+        text = "confused key:\t"
+        for key, target, prob in keys_to_show[:n]:
+            if prob == 0:
+                continue
+            text += f"{key}->{target} {prob*100:.0f}% "
+
+        return Analytics(self.get_analytics_name(), {"top_errors": keys_to_show}, text,)
+
+    def analyze_multiple_lessons(self, lesson_logs: List[LessonLog]) -> Analytics:
+        events = []
+        for l in lesson_logs:
+            events = events + l.events
+        keys = sorted(list(set([e.target for e in events] + [e.key for e in events])))
+        key2idx = {key: idx for idx, key in enumerate(keys)}
+        matrix = np.zeros([len(keys), len(keys)])
+        for e in events:
+            if e.target == e.key:
+                continue
+            matrix[key2idx[e.target], key2idx[e.key]] += 1
+        prob_matrix = matrix / np.sum(matrix)
+        flatten_matrix = np.ravel(prob_matrix)
+        n = 5
+        top_n = -np.sort(-flatten_matrix)[:n]
+        keys_to_show = []
+        for prob in top_n:
+            xs, ys = np.where(prob_matrix == prob)
+            for x, y in zip(xs, ys):
+                keys_to_show.append((keys[x], keys[y], prob_matrix[x, y]))
+        text = "confused key:\t"
+        for key, target, prob in keys_to_show[:n]:
+            if prob == 0:
+                continue
+            text += f"{key}->{target} {prob*100:.0f}% "
+
+        return Analytics(self.get_analytics_name(), {"top_errors": keys_to_show}, text,)
+
+    @staticmethod
+    def get_analytics_name() -> str:
+        return "Missed Key Ranking"
+
+    @staticmethod
+    def get_abbreviated_name() -> str:
+        return "missed_key_ranking"

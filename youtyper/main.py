@@ -5,7 +5,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import click
 
@@ -13,9 +13,6 @@ from youtyper.analyzers import default_analyzers
 from youtyper.cli import CLIOptions
 from youtyper.lessons import default_lesson_generators
 from youtyper.logs import save_to_log
-
-if TYPE_CHECKING:
-    from youtyper.lessons.lessons import Lesson
 
 from .ui import LessonWindow, show_and_calculate_analytics
 
@@ -65,7 +62,7 @@ from .ui import LessonWindow, show_and_calculate_analytics
 @click.option(
     "--analyzer",
     "-a",
-    default=["cpm", "error_rate"],
+    default=["cpm", "error_rate", "missed_key_ranking"],
     type=click.Choice(default_analyzers.keys(), case_sensitive=True),
     multiple=True,
     help="Analytics to be shown at the end of the lesson",
@@ -134,7 +131,6 @@ def main(
         win.addstr(0, 0, message)
         _ = win.getkey()
         while lesson := next(lesson_generator):
-            lesson: Lesson = lesson
             start_time = datetime.now()
             lesson_log = p.start(lesson, analyzers, lesson_logs)
             if lesson_log is None:
@@ -145,9 +141,8 @@ def main(
             win.refresh()
             message = f"lesson {current_lesson} / {len(lesson_generator)} result:"
             win.addstr(0, 0, message)
-            lines = 3
             (current_lesson_analytics, _,) = show_and_calculate_analytics(
-                win, lines, analyzers, lesson_log, lesson_logs
+                win, 3, analyzers, lesson_log, lesson_logs
             )
             log = save_to_log(lesson, lesson_log, current_lesson_analytics, options)
             logs.append(log)
