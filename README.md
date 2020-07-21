@@ -20,15 +20,12 @@ Second, the flexibility of analytics.
 
 I'm a pretty big fun of keybr.com, because of its beauty and detailed statistics. I may have spent more time watching the graphs than practicing. Though I can't create beautiful interfaces like them, I can provide more detailed statistics and even allow users to analyze their typing.
 
-## Naming
-
--   "y","o","u","t","p","e",and "r" are all on the upper row of the keyboard
--   These keys are why I created this app. 
--   This name may also indicates customizability of this app.
 
 ## Install
 
 `pip install youtyper`
+
+(`python >= 3.8` is required)
 
 ## Quickstart
 
@@ -127,3 +124,9 @@ The structure is as follows:
   } 
 }
 ```
+
+## Naming
+
+-   "y","o","u","t","p","e",and "r" are all on the upper row of the keyboard
+-   These keys are why I created this app.
+-   This name may also indicates customizability of this app.

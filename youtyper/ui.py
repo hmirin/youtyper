@@ -59,7 +59,7 @@ class LessonWindow(object):
             curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
             curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED)
             curses.noecho()
-            while True:
+            while len(current_str) < len(text):
                 win.clear()
                 curses.curs_set(0)
                 missed_str = "".join([c if c else " " for c in mistakes])
@@ -72,34 +72,28 @@ class LessonWindow(object):
                 for idx, (mistake, char) in enumerate(zip(mistakes, text)):
                     if idx > len(current_str):
                         break
-                    if mistake:
+                    elif mistake:
                         win.attron(curses.color_pair(1))
                         win.addstr(1, 8 + idx, char)
                         win.attroff(curses.color_pair(1))
                     else:
                         win.addstr(1, 8 + idx, char)
-                if text[len(current_str)] == " ":
-                    win.attron(curses.color_pair(2))
-                    win.addstr(1, 8 + len(current_str), text[len(current_str)])
-                    win.attroff(curses.color_pair(2))
-                else:
-                    win.attron(curses.color_pair(2))
-                    win.addstr(1, 8 + len(current_str), text[len(current_str)])
-                    win.attroff(curses.color_pair(2))
+                win.attron(curses.color_pair(2))
+                win.addstr(1, 8 + len(current_str), text[len(current_str)])
+                win.attroff(curses.color_pair(2))
                 win.attroff(curses.A_BOLD)
-                lines = 3
                 show_and_calculate_analytics(
-                    win, lines, analyzers, lesson_log, former_lesson_logs
+                    win, 3, analyzers, lesson_log, former_lesson_logs
                 )
                 win.addstr(2, 8 + len(current_str), "")
                 time.sleep(0.05)
                 key = win.getkey()
                 target = text[len(current_str)]
                 lesson_log.record_key(key, target)
-                win.refresh()
                 if key == target:
-                    if first_miss:
-                        mistakes[len(current_str)] = first_miss
+                    mistakes[
+                        len(current_str)
+                    ] = first_miss  # if no mistake, first_miss == ""
                     current_str = current_str + key
                     first_miss = ""
                 elif key:
@@ -107,10 +101,6 @@ class LessonWindow(object):
                     mistakes[len(current_str)] = key
                     if not first_miss:
                         first_miss = key
-                else:
-                    pass
-                if current_str == text:
-                    break
         except:
             aborted = True
         finally:
