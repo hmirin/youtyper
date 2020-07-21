@@ -8,10 +8,49 @@ from typing import List, Optional, Tuple
 import click
 
 from youtyper.analyzers import default_analyzers
+from youtyper.analyzers.analyzer import load_custom_analyzer
 from youtyper.lessons import default_lesson_generators
 from youtyper.lessons.lessons import Lesson, LessonGenerator, TextLessonGenerator
 
 from .ui import LessonWindow, show_and_calculate_analytics
+
+
+def select_lesson_generator(
+    lesson_type: str,
+    lesson_name: str,
+    text_path: str,
+    num_lessons: int,
+    len_lessons: int,
+    disable_shuffle: bool,
+    custom_lesson_generator,
+    custom_args,
+) -> LessonGenerator:
+    # Create LessonGenerator
+    if lesson_type == "built-in":
+        lesson_generator = default_lesson_generators[lesson_name]()
+    elif lesson_type == "text":
+        if not text_path:
+            raise ValueError("You must specify text_path to generate lessons.")
+        if not os.path.exists(text_path):
+            raise FileNotFoundError("You must specify valid text_path.")
+        try:
+            text = open(text_path, encoding="ascii").read()
+        except UnicodeDecodeError as e:
+            print(e.__traceback__)
+            raise ValueError("Only accepts ascii file for text_path")
+        filename = os.path.splitext(text_path)[0]
+        lesson_generator = TextLessonGenerator(
+            text, filename, num_lessons, len_lessons, not disable_shuffle
+        )
+    elif lesson_type == "python":
+        f = open(custom_lesson_generator[0])
+        code = f.read()
+        exec(code, globals())
+        custom_lesson_generator_class = globals()[custom_lesson_generator[1]]
+        lesson_generator = custom_lesson_generator_class(custom_args)
+    else:
+        raise
+    return lesson_generator
 
 
 @click.command(context_settings=dict(ignore_unknown_options=True))
@@ -59,7 +98,7 @@ from .ui import LessonWindow, show_and_calculate_analytics
 @click.option(
     "--analyzer",
     "-a",
-    default=["cpm", "error_rate"],
+    default=["cpm", "error_rate", "missed_key_ranking"],
     type=click.Choice(default_analyzers.keys(), case_sensitive=True),
     multiple=True,
     help="Analytics to be shown at the end of the lesson",
@@ -100,42 +139,24 @@ def main(
 ):
     if custom_lesson_generator[0] is None and custom_lesson_generator[1] is None:
         custom_lesson_generator = []
-    # Create LessonGenerator
-    if lesson_type == "built-in":
-        lesson_generator = default_lesson_generators[lesson_name]()
-    elif lesson_type == "text":
-        if not text_path:
-            raise ValueError("You must specify text_path to generate lessons.")
-        if not os.path.exists(text_path):
-            raise FileNotFoundError("You must specify valid text_path.")
-        try:
-            text = open(text_path, encoding="ascii").read()
-        except UnicodeDecodeError as e:
-            print(e.__traceback__)
-            raise ValueError("Only accepts ascii file for text_path")
-        filename = os.path.splitext(text_path)[0]
-        lesson_generator = TextLessonGenerator(
-            text, filename, num_lessons, len_lessons, not disable_shuffle
-        )
-    elif lesson_type == "python":
-        f = open(custom_lesson_generator[0])
-        code = f.read()
-        exec(code, globals())
-        custom_lesson_generator_class = globals()[custom_lesson_generator[1]]
-        lesson_generator: LessonGenerator = custom_lesson_generator_class(custom_args)
-    else:
-        raise
+
+    lesson_generator = select_lesson_generator(
+        lesson_type,
+        lesson_name,
+        text_path,
+        num_lessons,
+        len_lessons,
+        disable_shuffle,
+        custom_lesson_generator,
+        custom_args,
+    )
 
     # Create Analyzer
     analyzers = [default_analyzers[name]() for name in analyzer]
-
-    for analyzer_path, analyzer_classname in custom_analyzer:
-        f = open(analyzer_path[0])
-        code = f.read()
-        exec(code, globals())
-        custom_analyzer_class = globals()[analyzer_classname]
-        custom_analyzer = custom_analyzer_class(custom_args)
-        analyzers.append(custom_analyzer)
+    analyzers += [
+        load_custom_analyzer(analyzer_path, analyzer_classname, custom_args)
+        for analyzer_path, analyzer_classname in custom_analyzer
+    ]
 
     try:
         p = LessonWindow()
@@ -152,7 +173,6 @@ def main(
         win.addstr(0, 0, message)
         _ = win.getkey()
         while lesson := next(lesson_generator):
-            lesson: Lesson = lesson
             start_time = datetime.now()
             lesson_log = p.start(lesson, analyzers, lesson_logs)
             if lesson_log is None:
@@ -163,9 +183,8 @@ def main(
             win.refresh()
             message = f"lesson {current_lesson} / {len(lesson_generator)} result:"
             win.addstr(0, 0, message)
-            lines = 3
             (current_lesson_analytics, _,) = show_and_calculate_analytics(
-                win, lines, analyzers, lesson_log, lesson_logs
+                win, 3, analyzers, lesson_log, lesson_logs
             )
             log = {
                 "lesson_name": lesson.lesson_name,

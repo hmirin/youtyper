@@ -46,3 +46,11 @@ def calculate_all_analytics(
         ):
             multiple_lesson_analytics.append(a)
     return single_lesson_analytics, multiple_lesson_analytics
+
+
+def load_custom_analyzer(analyzer_path, analyzer_classname, custom_args) -> Analyzer:
+    with open(analyzer_path) as f:
+        code = f.read()
+        exec(code, globals())
+        custom_analyzer_class = globals()[analyzer_classname]
+        return custom_analyzer_class(custom_args)

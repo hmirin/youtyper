@@ -13,7 +13,7 @@ setuptools.setup(
     python_requires=">=3.8",
     py_modules=[PACKAGE_NAME],
     install_requires=["click>=7"],
-    extras_require={"dev": ["nose", "coverage", "black", "isort"]},
+    extras_require={"dev": ["nose", "coverage", "black", "isort", "numpy"]},
     zip_safe=False,
     keywords="touch-typing typing",
     classifiers=[
