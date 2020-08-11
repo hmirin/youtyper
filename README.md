@@ -2,6 +2,8 @@
 
 youtyper is a customizable command-line touch-typing tutor.
 
+![demo](https://github.com/hmirin/youtyper/blob/f1ebbe42c828933d5091881af7436eceba5b2721/demo.gif?raw=true)
+
 You can easily add your customized lesson with text, even Python function.
 
 ## Motivation
